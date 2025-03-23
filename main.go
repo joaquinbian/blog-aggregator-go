@@ -13,5 +13,8 @@ func main() {
 		fmt.Printf("there was an error: %w", err)
 	}
 
-	fmt.Print(cfg.Db_url)
+	cfg.SetUser("Joaquin")
+
+	fmt.Print(cfg)
+
 }
