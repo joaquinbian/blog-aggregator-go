@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const ConfigFileName = "gatorconfig.json"
+const ConfigFileName = ".gatorconfig.json"
 
 func getConfigFilePath() (string, error) {
 	usrHomeDir, err := os.UserHomeDir()
