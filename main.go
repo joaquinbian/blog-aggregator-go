@@ -1,11 +1,14 @@
 package main
 
 import (
-	"blog-agregator-go/internal/commands"
 	"blog-agregator-go/internal/config"
 	"fmt"
 	"os"
 )
+
+type state struct {
+	cfg *config.Config
+}
 
 func main() {
 
@@ -21,15 +24,15 @@ func main() {
 		fmt.Printf("there was an error: %w", err)
 	}
 
-	state := commands.State{
-		Cfg: &cfg,
+	appState := &state{
+		cfg: &cfg,
 	}
 
-	cmds := commands.Commands{
-		Commands: make(map[string]func(*commands.State, commands.Command) error),
+	cmds := Commands{
+		commands: make(map[string]func(*state, Command) error),
 	}
 
-	cmds.Register("login", commands.HandlerLogin)
+	cmds.Register("login", HandlerLogin)
 
 	args := os.Args[1:]
 
@@ -39,7 +42,7 @@ func main() {
 	}
 
 	cmdName := args[0]
-	if err := cmds.Run(&state, commands.Command{Name: cmdName, Args: args[1:]}); err != nil {
+	if err := cmds.Run(appState, Command{Name: cmdName, Args: args[1:]}); err != nil {
 		fmt.Printf("there was an error running the %s command:\n%s\n", cmdName, err)
 		os.Exit(1)
 	}
