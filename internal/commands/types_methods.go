@@ -14,9 +14,5 @@ func (c *Commands) Run(s *State, cmd Command) error {
 		return fmt.Errorf("The %s command does not exists!", cmd.Name)
 	}
 
-	err := command(s, cmd)
-	if err != nil {
-		return err
-	}
-	return nil
+	return command(s, cmd)
 }
