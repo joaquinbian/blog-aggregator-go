@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 type Config struct {
@@ -42,7 +43,7 @@ func getConfigFilePath() (string, error) {
 		return "", fmt.Errorf("error al leer home directory: %v", err)
 	}
 
-	return fmt.Sprintf("%s/%s", dir, configFileName), nil
+	return filepath.Join(dir, configFileName), nil
 }
 
 func Read() (Config, error) {
@@ -68,10 +69,5 @@ func Read() (Config, error) {
 
 func (cfg *Config) SetUser(name string) error {
 	cfg.Current_user_name = name
-	err := write(*cfg)
-	if err != nil {
-		fmt.Printf("en el if del error set user")
-		return fmt.Errorf("error al escribir config file: %v", err)
-	}
-	return nil
+	return write(*cfg)
 }
