@@ -32,18 +32,3 @@ func (c *Commands) Register(name string, f func(*State, Command) error) error {
 	c.commands[name] = f
 	return nil
 }
-
-func HandlerLogin(state *State, cmd Command) error {
-
-	if len(cmd.Args) == 0 {
-		return fmt.Errorf("error: no args provided for the %v command", cmd.Name)
-	}
-	name := cmd.Args[0]
-	err := state.cfg.SetUser(name)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("username changed to %v\n", name)
-	return nil
-}

@@ -17,9 +17,6 @@ func main() {
 		log.Fatalf("expected 2 or more arguements")
 	}
 
-	var cmd = args[1]
-	var cmdArgs = args[2:]
-
 	cfgFile, err := config.Read()
 
 	if err != nil {
@@ -27,7 +24,7 @@ func main() {
 		return
 	}
 
-	state := State{
+	state := &State{
 		cfg: &cfgFile,
 	}
 
@@ -35,9 +32,11 @@ func main() {
 		commands: make(map[string]func(*State, Command) error),
 	}
 
-	cmds.Register("login", HandlerLogin)
+	cmds.Register("login", handlerLogin)
 
-	err = cmds.Run(&state, Command{Name: cmd, Args: cmdArgs})
+	var cmdName = args[1]
+	var cmdArgs = args[2:]
+	err = cmds.Run(state, Command{Name: cmdName, Args: cmdArgs})
 
 	if err != nil {
 		log.Fatalf("error main app: %v\n", err)
