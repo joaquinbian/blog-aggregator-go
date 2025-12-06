@@ -12,8 +12,8 @@ import (
 
 func handlerAddFeed(state *State, cmd Command) error {
 
-	if len(cmd.Args) < 2 {
-		return fmt.Errorf("error: expected 2 arguments\nfe: addFeed <web name> <url>")
+	if len(cmd.Args) != 2 {
+		return fmt.Errorf("usage: %s <web name> <url>", cmd.Name)
 	}
 
 	name := cmd.Args[0]
@@ -43,7 +43,22 @@ func handlerAddFeed(state *State, cmd Command) error {
 		Url:       url,
 		UserID:    user.ID,
 	}
-	state.db.CreateFeed(context.Background(), feed)
+	f, err := state.db.CreateFeed(context.Background(), feed)
+
+	if err != nil {
+		return fmt.Errorf("error creating feed: %v", err)
+	}
+
+	printFeed(f)
 
 	return nil
+}
+
+func printFeed(feed database.Feed) {
+	fmt.Printf("* ID:            %s\n", feed.ID)
+	fmt.Printf("* Created:       %v\n", feed.CreatedAt)
+	fmt.Printf("* Updated:       %v\n", feed.UpdatedAt)
+	fmt.Printf("* Name:          %s\n", feed.Name)
+	fmt.Printf("* URL:           %s\n", feed.Url)
+	fmt.Printf("* UserID:        %s\n", feed.UserID)
 }
