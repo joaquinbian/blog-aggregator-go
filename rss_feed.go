@@ -7,6 +7,7 @@ import (
 	"html"
 	"io"
 	"net/http"
+	"time"
 )
 
 type RSSFeed struct {
@@ -25,44 +26,37 @@ type RSSItem struct {
 	PubDate     string `xml:"pubDate"`
 }
 
-func handlerFetchFeed(state *State, cmd Command) error {
-	feed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
-
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("%v\n", feed)
-
-	return nil
-}
-
 func fetchFeed(ctx context.Context, feedUrl string) (*RSSFeed, error) {
 
 	var feed = &RSSFeed{}
 
+	httpClient := http.Client{
+		Timeout: 10 * time.Second,
+	}
 	req, err := http.NewRequestWithContext(ctx, "GET", feedUrl, http.NoBody)
 
 	if err != nil {
-		return &RSSFeed{}, fmt.Errorf("error generando request: %v", err)
+		return nil, fmt.Errorf("error generando request: %v", err)
 	}
 
 	req.Header.Set("User-Agent", "gator")
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := httpClient.Do(req)
 
 	if err != nil {
-		return &RSSFeed{}, fmt.Errorf("error en la request: %v", err)
+		return nil, fmt.Errorf("error en la request: %v", err)
 	}
+
+	defer res.Body.Close()
 
 	data, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		return &RSSFeed{}, fmt.Errorf("error leyendo body: %v", err)
+		return nil, fmt.Errorf("error leyendo body: %v", err)
 	}
 
 	if err = xml.Unmarshal(data, feed); err != nil {
-		return &RSSFeed{}, fmt.Errorf("error unmarshall data: %v", err)
+		return nil, fmt.Errorf("error unmarshall data: %v", err)
 	}
 
 	feed.Channel.Description = html.UnescapeString(feed.Channel.Description)
