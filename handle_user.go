@@ -19,13 +19,19 @@ func handlerLogin(state *State, cmd Command) error {
 		return err
 	}
 
+	_, err = state.db.GetUser(context.Background(), name)
+
+	if err != nil {
+		log.Fatal("error login: no existe el usuario")
+	}
+
 	err = state.cfg.SetUser(name)
 
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("username changed to %v\n", name)
+	fmt.Printf("welcome %v!\n", name)
 	return nil
 }
 

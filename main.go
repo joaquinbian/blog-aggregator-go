@@ -55,6 +55,7 @@ func main() {
 	//registramos comandos
 	cmds.Register("login", handlerLogin)
 	cmds.Register("register", handlerRegister)
+	cmds.Register("reset", handleReset)
 
 	//corremos el comando ingresado por el usuario
 	var cmdName = args[1]
