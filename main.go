@@ -60,6 +60,7 @@ func main() {
 	cmds.Register("agg", handlerFetchFeed)
 	cmds.Register("addfeed", handlerAddFeed)
 	cmds.Register("feeds", handlerListFeeds)
+	cmds.Register("follow", handlerFeedFollow)
 
 	//corremos el comando ingresado por el usuario
 	var cmdName = args[1]
