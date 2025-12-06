@@ -4,6 +4,8 @@ import (
 	"blog-aggregator-go/internal/config"
 	"log"
 	"os"
+
+	_ "github.com/lib/pq"
 )
 
 type State struct {
