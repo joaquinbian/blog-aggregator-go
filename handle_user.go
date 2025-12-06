@@ -59,3 +59,20 @@ func handlerRegister(state *State, cmd Command) error {
 	fmt.Printf("User %s created!\n%v", name, user)
 	return nil
 }
+
+func handlerList(state *State, cmd Command) error {
+	users, err := state.db.GetUsers(context.Background())
+
+	if err != nil {
+		return fmt.Errorf("error al obtener usuarios: %v", err)
+	}
+
+	for _, u := range users {
+		if u.Name == state.cfg.Current_user_name {
+			fmt.Printf("* %v (current)\n", u.Name)
+		} else {
+			fmt.Printf("* %v\n", u.Name)
+		}
+	}
+	return nil
+}
