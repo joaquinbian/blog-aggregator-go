@@ -58,6 +58,7 @@ func main() {
 	cmds.Register("reset", handleReset)
 	cmds.Register("users", handlerList)
 	cmds.Register("agg", handlerFetchFeed)
+	cmds.Register("addfeed", handlerAddFeed)
 	//corremos el comando ingresado por el usuario
 	var cmdName = args[1]
 	var cmdArgs = args[2:]
