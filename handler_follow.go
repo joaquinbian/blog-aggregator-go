@@ -12,19 +12,19 @@ import (
 func handlerFeedFollow(state *State, cmd Command) error {
 
 	if len(cmd.Args) != 1 {
-		return fmt.Errorf("usage: %v <url>", cmd.Name)
+		return fmt.Errorf("usage: %v <url>\n", cmd.Name)
 	}
 
 	url := cmd.Args[0]
 	feed, err := state.db.GetFeedBYUrl(context.Background(), url)
 
 	if err != nil {
-		return fmt.Errorf("error getting feeds: %v", err)
+		return fmt.Errorf("error getting feed: %v\n", err)
 	}
 
 	user, err := state.db.GetUser(context.Background(), state.cfg.Current_user_name)
 	if err != nil {
-		return fmt.Errorf("error getting current user: %v", err)
+		return fmt.Errorf("error getting current user: %v\n", err)
 	}
 
 	params := database.CreateFeedFollowParams{
@@ -41,14 +41,12 @@ func handlerFeedFollow(state *State, cmd Command) error {
 		return fmt.Errorf("error creating feed follow: %v", err)
 	}
 
-	printFeedFollow(feedFollow)
+	fmt.Println("feed follow created!")
+	printFeedFollow(feedFollow.UserName, feedFollow.FeedName)
 	return nil
 }
 
-func printFeedFollow(feedFollow database.CreateFeedFollowRow) {
-	fmt.Printf("* ID:            %s\n", feedFollow.ID)
-	fmt.Printf("* Created:       %v\n", feedFollow.CreatedAt)
-	fmt.Printf("* Updated:       %v\n", feedFollow.UpdatedAt)
-	fmt.Printf("* Name:          %s\n", feedFollow.UserName)
-	fmt.Printf("* Feed Name:           %s\n", feedFollow.FeedName)
+func printFeedFollow(userName string, feedName string) {
+	fmt.Printf("* Name:          %s\n", userName)
+	fmt.Printf("* Feed Name:           %s\n", feedName)
 }

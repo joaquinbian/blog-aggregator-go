@@ -56,13 +56,18 @@ func handlerAddFeed(state *State, cmd Command) error {
 		UserID:    user.ID,
 		FeedID:    feed.ID,
 	}
-	_, err = state.db.CreateFeedFollow(context.Background(), feedFollow)
+	feedFollowRow, err := state.db.CreateFeedFollow(context.Background(), feedFollow)
 
 	if err != nil {
 		return fmt.Errorf("error registering feed follow for current user: %v", err)
 	}
 
+	fmt.Println("feed created!")
 	printFeed(f)
+
+	fmt.Println()
+	fmt.Println("Feed followed successfully!")
+	printFeedFollow(feedFollowRow.UserName, feedFollowRow.FeedName)
 
 	return nil
 }
