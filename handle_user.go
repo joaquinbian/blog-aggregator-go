@@ -56,7 +56,7 @@ func handlerRegister(state *State, cmd Command) error {
 		return err
 	}
 
-	fmt.Printf("User %s created!\n%v", name, user)
+	fmt.Printf("User %s created!\n%v\n", name, user)
 	return nil
 }
 
