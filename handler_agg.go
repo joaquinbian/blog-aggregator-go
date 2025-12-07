@@ -1,9 +1,14 @@
 package main
 
 import (
+	"blog-aggregator-go/internal/database"
+	"blog-aggregator-go/internal/utils"
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func handlerFetchFeed(state *State, cmd Command) error {
@@ -48,21 +53,49 @@ func scrapeFeeds(state *State) error {
 		return fmt.Errorf("error fetching feed: %v\n", err)
 	}
 
-	printFeedItems(feed)
-	return nil
-}
+	err = savePostToDB(state, feed, nextFeed.ID)
 
-func printFeedItems(feed *RSSFeed) {
-
-	fmt.Printf("post from %s:\n", feed.Channel.Title)
-	fmt.Println("-------------------------------------------------")
-	for _, item := range feed.Channel.Item {
-		fmt.Printf("* %s\n", item.Title)
+	fmt.Printf("error de saveposts %v\n", err)
+	if err != nil {
+		return fmt.Errorf("%s", err)
 	}
 
 	fmt.Println()
-	fmt.Printf("found %d post for %s feed!\n", len(feed.Channel.Item), feed.Channel.Title)
 	fmt.Println("-------------------------------------------------")
 	fmt.Println()
+	fmt.Printf("fetching posts from %s...\n", feed.Channel.Title)
+	fmt.Printf("found %d post for %s feed!\n", len(feed.Channel.Item), feed.Channel.Title)
+	return nil
+}
+
+func savePostToDB(state *State, feed *RSSFeed, idFeed uuid.UUID) error {
+	var err error = nil
+	for _, item := range feed.Channel.Item {
+		fmt.Print("me ejecuto range")
+		pubDate, err := utils.ParsePubDate(item.PubDate)
+		if err != nil {
+			pubDate = time.Now()
+			break
+		}
+
+		postData := database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			Title:       item.Title,
+			Url:         item.Link,
+			Description: sql.NullString{String: item.Description, Valid: true},
+			PublishedAt: pubDate,
+			FeedID:      idFeed,
+		}
+
+		post, err := state.db.CreatePost(context.Background(), postData)
+
+		if err != nil {
+			fmt.Errorf("error inserting post %v: %v\n", post.Title, err)
+			continue
+		}
+	}
+	return err
 
 }

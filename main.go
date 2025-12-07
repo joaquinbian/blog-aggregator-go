@@ -63,6 +63,7 @@ func main() {
 	cmds.Register("follow", loginMiddleware(handlerFeedFollow))
 	cmds.Register("following", loginMiddleware(handlerFollowing))
 	cmds.Register("unfollow", loginMiddleware(handlerUnfollow))
+	cmds.Register("browse", loginMiddleware(handlerBrowse))
 
 	//corremos el comando ingresado por el usuario
 	var cmdName = args[1]

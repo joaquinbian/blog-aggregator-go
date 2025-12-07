@@ -25,4 +25,4 @@ WHERE id = $1
 RETURNING *;
 
 -- name: GetNextFeedToFetch :one
-SELECT * FROM feeds ORDER BY last_fetched_at LIMIT 1;
+SELECT * FROM feeds ORDER BY last_fetched_at NULLS FIRST LIMIT 1;

@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"regexp"
+	"time"
 )
 
 func GetNameFromArgs(args []string, name string) (string, error) {
@@ -37,4 +38,26 @@ func ValidateUrl(url string) bool {
 	}
 
 	return true
+}
+
+func ParsePubDate(s string) (time.Time, error) {
+	// Try a few common RSS/Atom formats
+	layouts := []string{
+		time.RFC1123Z,                   // "Mon, 02 Jan 2006 15:04:05 -0700"
+		time.RFC1123,                    // "Mon, 02 Jan 2006 15:04:05 MST"
+		time.RFC822Z,                    // "02 Jan 06 15:04 -0700"
+		time.RFC822,                     // "02 Jan 06 15:04 MST"
+		time.RFC3339,                    // "2006-01-02T15:04:05Z07:00"
+		"Mon, 02 Jan 2006 15:04:05 MST", // some feeds use weird variants
+	}
+
+	var lastErr error
+	for _, layout := range layouts {
+		t, err := time.Parse(layout, s)
+		if err == nil {
+			return t, nil
+		}
+		lastErr = err
+	}
+	return time.Time{}, lastErr
 }
