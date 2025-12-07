@@ -1,13 +1,14 @@
 package main
 
 import (
+	"blog-aggregator-go/internal/database"
 	"context"
 	"fmt"
 )
 
-func handlerFollowing(state *State, cmd Command) error {
+func handlerFollowing(state *State, cmd Command, user database.User) error {
 
-	feeds, err := state.db.GetFeedFollowsForUser(context.Background(), state.cfg.Current_user_name)
+	feeds, err := state.db.GetFeedFollowsForUser(context.Background(), user.ID)
 
 	if err != nil {
 		return fmt.Errorf("error getting feed follows for user: %v\n", err)

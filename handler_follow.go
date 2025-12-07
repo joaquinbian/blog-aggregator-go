@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerFeedFollow(state *State, cmd Command) error {
+func handlerFeedFollow(state *State, cmd Command, user database.User) error {
 
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %v <url>\n", cmd.Name)
@@ -20,11 +20,6 @@ func handlerFeedFollow(state *State, cmd Command) error {
 
 	if err != nil {
 		return fmt.Errorf("error getting feed: %v\n", err)
-	}
-
-	user, err := state.db.GetUser(context.Background(), state.cfg.Current_user_name)
-	if err != nil {
-		return fmt.Errorf("error getting current user: %v\n", err)
 	}
 
 	params := database.CreateFeedFollowParams{

@@ -24,4 +24,4 @@ INNER JOIN feeds F ON F.id = IFF.feed_id;
 SELECT FF.*, U.name as user_name, F.name as feed_name FROM feed_follows FF 
 INNER JOIN users U ON U.id = FF.user_id
 INNER JOIN feeds F ON F.id = FF.feed_id
-WHERE U.name = $1;
+WHERE U.id = $1;

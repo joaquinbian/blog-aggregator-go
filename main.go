@@ -58,10 +58,10 @@ func main() {
 	cmds.Register("reset", handleReset)
 	cmds.Register("users", handlerList)
 	cmds.Register("agg", handlerFetchFeed)
-	cmds.Register("addfeed", handlerAddFeed)
 	cmds.Register("feeds", handlerListFeeds)
-	cmds.Register("follow", handlerFeedFollow)
-	cmds.Register("following", handlerFollowing)
+	cmds.Register("addfeed", loginMiddleware(handlerAddFeed))
+	cmds.Register("follow", loginMiddleware(handlerFeedFollow))
+	cmds.Register("following", loginMiddleware(handlerFollowing))
 
 	//corremos el comando ingresado por el usuario
 	var cmdName = args[1]

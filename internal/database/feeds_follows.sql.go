@@ -77,7 +77,7 @@ const getFeedFollowsForUser = `-- name: GetFeedFollowsForUser :many
 SELECT ff.id, ff.created_at, ff.updated_at, ff.user_id, ff.feed_id, U.name as user_name, F.name as feed_name FROM feed_follows FF 
 INNER JOIN users U ON U.id = FF.user_id
 INNER JOIN feeds F ON F.id = FF.feed_id
-WHERE U.name = $1
+WHERE U.id = $1
 `
 
 type GetFeedFollowsForUserRow struct {
@@ -90,8 +90,8 @@ type GetFeedFollowsForUserRow struct {
 	FeedName  string
 }
 
-func (q *Queries) GetFeedFollowsForUser(ctx context.Context, name string) ([]GetFeedFollowsForUserRow, error) {
-	rows, err := q.db.QueryContext(ctx, getFeedFollowsForUser, name)
+func (q *Queries) GetFeedFollowsForUser(ctx context.Context, id uuid.UUID) ([]GetFeedFollowsForUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFeedFollowsForUser, id)
 	if err != nil {
 		return nil, err
 	}

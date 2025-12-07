@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerAddFeed(state *State, cmd Command) error {
+func handlerAddFeed(state *State, cmd Command, user database.User) error {
 
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("usage: %s <web name> <url>", cmd.Name)
@@ -25,14 +25,6 @@ func handlerAddFeed(state *State, cmd Command) error {
 
 	if !utils.ValidateUrl(url) {
 		return fmt.Errorf("error: invalid url")
-	}
-
-	currentUser := state.cfg.Current_user_name
-
-	user, err := state.db.GetUser(context.Background(), currentUser)
-
-	if err != nil {
-		return fmt.Errorf("error: error al obtener el usuario actual")
 	}
 
 	feed := database.CreateFeedParams{
