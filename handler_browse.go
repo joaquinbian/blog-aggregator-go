@@ -1,10 +1,11 @@
 package main
 
 import (
-	"blog-aggregator-go/internal/database"
 	"context"
 	"fmt"
 	"strconv"
+
+	"github.com/joaquinbian/blog-aggregator-go/internal/database"
 )
 
 func handlerBrowse(state *State, cmd Command, user database.User) error {

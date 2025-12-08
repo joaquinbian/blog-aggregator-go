@@ -1,9 +1,10 @@
 package main
 
 import (
-	"blog-aggregator-go/internal/database"
 	"context"
 	"fmt"
+
+	"github.com/joaquinbian/blog-aggregator-go/internal/database"
 )
 
 func handlerFollowing(state *State, cmd Command, user database.User) error {

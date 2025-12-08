@@ -1,9 +1,10 @@
 package main
 
 import (
-	"blog-aggregator-go/internal/database"
 	"context"
 	"fmt"
+
+	"github.com/joaquinbian/blog-aggregator-go/internal/database"
 )
 
 func handlerListFeeds(state *State, cmd Command) error {

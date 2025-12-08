@@ -1,290 +1,202 @@
-# Blog Aggregator - Go
+# Gator - RSS Feed Aggregator
 
-Un agregador de feeds RSS desarrollado en Go que permite a los usuarios seguir y recolectar contenido de múltiples blogs y sitios web mediante sus feeds RSS.
+A command-line RSS feed aggregator built with Go and PostgreSQL.
 
-## 📋 Descripción
+## Prerequisites
 
-Blog Aggregator es una herramienta de línea de comandos (CLI) que permite gestionar feeds RSS de manera eficiente. Los usuarios pueden registrarse, agregar feeds, seguirlos, y el sistema automáticamente recolecta y muestra el contenido actualizado de los feeds configurados.
+Before running this program, you'll need to have the following installed on your system:
 
-### Características principales
+### 1. PostgreSQL
+You need PostgreSQL installed and running on your machine.
 
-- ✅ Gestión de usuarios (registro, login, listado)
-- ✅ Administración de feeds RSS (agregar, listar, seguir, dejar de seguir)
-- ✅ Recolección automática de contenido de feeds en intervalos configurables
-- ✅ Almacenamiento persistente en PostgreSQL
-- ✅ Sistema de autenticación basado en archivo de configuración
-- ✅ Middleware para proteger comandos que requieren autenticación
+**Installation:**
+- **macOS**: `brew install postgresql`
+- **Ubuntu/Debian**: `sudo apt-get install postgresql`
+- **Windows**: Download from [postgresql.org](https://www.postgresql.org/download/)
 
-## 🛠️ Tecnologías utilizadas
-
-- **Go 1.25.1**: Lenguaje de programación principal
-- **PostgreSQL**: Base de datos relacional
-- **sqlc**: Generación de código type-safe para SQL
-- **goose**: Herramienta de migraciones de base de datos
-- **github.com/lib/pq**: Driver de PostgreSQL para Go
-- **github.com/google/uuid**: Generación de UUIDs
-
-## 📦 Dependencias
-
-Las dependencias del proyecto están definidas en `go.mod`:
-
-```go
-github.com/google/uuid v1.6.0
-github.com/lib/pq v1.10.9
-```
-
-## 🚀 Instalación
-
-### Prerrequisitos
-
-1. **Go 1.25.1 o superior**
-   ```bash
-   go version
-   ```
-
-2. **PostgreSQL** instalado y ejecutándose
-   ```bash
-   psql --version
-   ```
-
-3. **Goose** para migraciones (opcional pero recomendado)
-   ```bash
-   go install github.com/pressly/goose/v3/cmd/goose@latest
-   ```
-
-4. **sqlc** para generar código SQL (solo si modificas queries)
-   ```bash
-   go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-   ```
-
-### Pasos de instalación
-
-1. **Clonar el repositorio**
-   ```bash
-   git clone <url-del-repositorio>
-   cd blog-aggregator-go
-   ```
-
-2. **Instalar dependencias**
-   ```bash
-   go mod download
-   ```
-
-3. **Configurar la base de datos**
-   
-   Crear una base de datos en PostgreSQL:
-   ```bash
-   createdb blog_aggregator
-   ```
-
-4. **Ejecutar migraciones**
-   ```bash
-   cd sql/schema
-   goose postgres "user=tu_usuario dbname=blog_aggregator sslmode=disable" up
-   cd ../..
-   ```
-
-5. **Crear archivo de configuración**
-   
-   Crear el archivo `.gatorconfig.json` en tu directorio home (`~/.gatorconfig.json`):
-   ```json
-   {
-     "db_url": "postgres://usuario:contraseña@localhost:5432/blog_aggregator?sslmode=disable",
-     "current_user_name": ""
-   }
-   ```
-
-6. **Compilar el proyecto**
-   ```bash
-   go build -o gator
-   ```
-
-## 📖 Uso
-
-### Comandos disponibles
-
-#### Gestión de usuarios
-
-**Registrar un nuevo usuario**
+After installation, make sure PostgreSQL is running:
 ```bash
-./gator register <nombre_usuario>
+# Check if PostgreSQL is running
+psql --version
 ```
 
-**Iniciar sesión**
+Create a database for the application:
 ```bash
-./gator login <nombre_usuario>
+createdb gator
 ```
 
-**Listar todos los usuarios**
+### 2. Go
+You need Go 1.25 or higher installed.
+
+**Installation:**
+- Download from [go.dev/dl](https://go.dev/dl/)
+- Or use a package manager:
+  - **macOS**: `brew install go`
+  - **Ubuntu/Debian**: `sudo apt-get install golang`
+
+Verify installation:
 ```bash
-./gator users
+go version
 ```
 
-**Resetear base de datos (elimina todos los usuarios)**
-```bash
-./gator reset
-```
+## Installation
 
-#### Gestión de feeds
-
-**Agregar un nuevo feed**
-```bash
-./gator addfeed <nombre_feed> <url_feed>
-```
-Ejemplo:
-```bash
-./gator addfeed "Blog Golang" https://go.dev/blog/feed.atom
-```
-
-**Listar todos los feeds**
-```bash
-./gator feeds
-```
-
-**Seguir un feed existente**
-```bash
-./gator follow <url_feed>
-```
-
-**Ver feeds que estás siguiendo**
-```bash
-./gator following
-```
-
-**Dejar de seguir un feed**
-```bash
-./gator unfollow <url_feed>
-```
-
-#### Recolección de feeds
-
-**Iniciar agregador automático**
-```bash
-./gator agg <intervalo>
-```
-Ejemplo:
-```bash
-./gator agg 1m    # Recolecta cada 1 minuto
-./gator agg 30s   # Recolecta cada 30 segundos
-./gator agg 1h    # Recolecta cada 1 hora
-```
-
-## 🗄️ Estructura de la base de datos
-
-### Tablas
-
-**users**
-- `id`: UUID (PK)
-- `created_at`: TIMESTAMP
-- `updated_at`: TIMESTAMP
-- `name`: VARCHAR(50) UNIQUE
-
-**feeds**
-- `id`: UUID (PK)
-- `created_at`: TIMESTAMP
-- `updated_at`: TIMESTAMP
-- `name`: VARCHAR(50)
-- `url`: VARCHAR(250) UNIQUE
-- `user_id`: UUID (FK → users)
-- `last_fetched_at`: TIMESTAMP
-
-**feed_follows**
-- `id`: UUID (PK)
-- `created_at`: TIMESTAMP
-- `updated_at`: TIMESTAMP
-- `user_id`: UUID (FK → users)
-- `feed_id`: UUID (FK → feeds)
-- UNIQUE(user_id, feed_id)
-
-## 📁 Estructura del proyecto
-
-```
-blog-aggregator-go/
-├── internal/
-│   ├── config/           # Manejo de archivo de configuración
-│   │   └── config.go
-│   ├── database/         # Código generado por sqlc
-│   │   ├── db.go
-│   │   ├── models.go
-│   │   ├── users.sql.go
-│   │   ├── feeds.sql.go
-│   │   └── feeds_follows.sql.go
-│   └── utils/            # Utilidades generales
-│       └── utils.go
-├── sql/
-│   ├── schema/           # Migraciones de base de datos
-│   │   ├── 0001_users.sql
-│   │   ├── 0002_feeds.sql
-│   │   ├── 0003_feeds_follows.sql
-│   │   └── 0004_feeds.sql
-│   └── queries/          # Queries SQL para sqlc
-│       ├── users.sql
-│       ├── feeds.sql
-│       └── feeds_follows.sql
-├── commands.go           # Sistema de comandos
-├── middleware.go         # Middleware de autenticación
-├── main.go              # Punto de entrada
-├── rss_feed.go          # Manejo de feeds RSS
-├── handle_*.go          # Handlers de comandos
-├── go.mod
-├── go.sum
-├── sqlc.yaml            # Configuración de sqlc
-└── README.md
-```
-
-## 🔧 Desarrollo
-
-### Modificar queries SQL
-
-Si necesitas modificar las queries de base de datos:
-
-1. Edita los archivos en `sql/queries/`
-2. Regenera el código con sqlc:
-   ```bash
-   sqlc generate
-   ```
-
-### Crear nuevas migraciones
+Install the `gator` CLI tool using `go install`:
 
 ```bash
-cd sql/schema
-goose create nombre_migracion sql
+go install github.com/joaquinbian/blog-aggregator-go@latest
 ```
 
-## 🤝 Contribuciones
+This will install the `gator` binary to your `$GOPATH/bin` directory (typically `~/go/bin`).
 
-Las contribuciones son bienvenidas. Por favor:
+Make sure your `$GOPATH/bin` is in your system's PATH:
+```bash
+export PATH=$PATH:$(go env GOPATH)/bin
+```
 
-1. Haz fork del proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+## Configuration
 
-## 📝 Notas adicionales
+Before running the program, you need to set up a configuration file.
 
-- El archivo `.gatorconfig.json` almacena la configuración de conexión a la base de datos y el usuario actual logueado
-- Los comandos que requieren autenticación (`addfeed`, `follow`, `following`, `unfollow`) verifican que haya un usuario logueado mediante middleware
-- El sistema de agregación funciona en un loop infinito, recolectando el feed menos recientemente actualizado en cada iteración
+Create a file named `.gatorconfig.json` in your home directory:
 
-## 🐛 Solución de problemas
+```bash
+cd ~
+touch .gatorconfig.json
+```
 
-**Error de conexión a la base de datos**
-- Verifica que PostgreSQL esté ejecutándose
-- Revisa las credenciales en `.gatorconfig.json`
-- Asegúrate de que la base de datos existe
+Add the following content to `.gatorconfig.json`:
 
-**Error "command does not exist"**
-- Verifica que el comando esté correctamente escrito
-- Consulta la lista de comandos disponibles arriba
+```json
+{
+  "db_url": "postgres://username:password@localhost:5432/gator?sslmode=disable",
+  "current_user_name": ""
+}
+```
 
-**Error "no user logged in"**
-- Debes ejecutar `./gator login <nombre>` antes de usar comandos protegidos
+Replace `username` and `password` with your PostgreSQL credentials.
 
-## 📄 Licencia
+## Usage
 
-Este proyecto es de código abierto y está disponible bajo la licencia MIT (o la licencia que elijas especificar).
+Once installed and configured, you can use the `gator` CLI with the following commands:
 
----
+### User Management
 
-Desarrollado con ❤️ usando Go
+**Register a new user:**
+```bash
+gator register <your_name>
+```
+
+**Login:**
+```bash
+gator login <your_name>
+```
+
+**List all users:**
+```bash
+gator users
+```
+
+**Reset database (delete all users):**
+```bash
+gator reset
+```
+⚠️ Warning: This will delete all users and their associated data from the database.
+
+### Feed Management
+
+**Add a new RSS feed:**
+```bash
+gator addfeed <feed_name> <feed_url>
+```
+Example:
+```bash
+gator addfeed "Golang Blog" https://go.dev/blog/feed.atom
+```
+
+**List all feeds:**
+```bash
+gator feeds
+```
+
+**Follow a feed:**
+```bash
+gator follow <feed_url>
+```
+
+**See your followed feeds:**
+```bash
+gator following
+```
+
+**Unfollow a feed:**
+```bash
+gator unfollow <feed_url>
+```
+
+### Feed Aggregation
+
+**Start the aggregator (fetches feeds at regular intervals):**
+```bash
+gator agg <time_interval>
+```
+Examples:
+```bash
+gator agg 30s   # Fetch every 30 seconds
+gator agg 5m    # Fetch every 5 minutes
+gator agg 1h    # Fetch every hour
+```
+
+This command will continuously fetch RSS feeds in the background based on the time interval you specify. It automatically stores all posts from your followed feeds into the database.
+
+### Browse Posts
+
+**View posts from your followed feeds:**
+```bash
+gator browse <limit>
+```
+Examples:
+```bash
+gator browse       # View 2 most recent posts (default)
+gator browse 10    # View 10 most recent posts
+gator browse 50    # View 50 most recent posts
+```
+
+This command displays posts from all the feeds you're following, including the post title, description, feed name, and link.
+
+## Example Workflow
+
+```bash
+# 1. Register yourself
+gator register alice
+
+# 2. Add some RSS feeds
+gator addfeed "Tech Crunch" https://techcrunch.com/feed/
+gator addfeed "Hacker News" https://news.ycombinator.com/rss
+
+# 3. Follow a feed
+gator follow https://techcrunch.com/feed/
+
+# 4. Check which feeds you're following
+gator following
+
+# 5. Start aggregating feeds (fetches every minute)
+# Run this in a separate terminal window
+gator agg 1m
+
+# 6. Browse the collected posts
+gator browse 5
+```
+
+## Database Schema
+
+The application uses four main tables:
+
+- **users**: Stores user information
+- **feeds**: Stores RSS feed information
+- **feed_follows**: Tracks which users follow which feeds
+- **posts**: Stores individual posts/articles from RSS feeds
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.

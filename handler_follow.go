@@ -1,12 +1,12 @@
 package main
 
 import (
-	"blog-aggregator-go/internal/database"
 	"context"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/joaquinbian/blog-aggregator-go/internal/database"
 )
 
 func handlerFeedFollow(state *State, cmd Command, user database.User) error {

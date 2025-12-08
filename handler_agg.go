@@ -1,14 +1,14 @@
 package main
 
 import (
-	"blog-aggregator-go/internal/database"
-	"blog-aggregator-go/internal/utils"
 	"context"
 	"database/sql"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/joaquinbian/blog-aggregator-go/internal/database"
+	"github.com/joaquinbian/blog-aggregator-go/internal/utils"
 )
 
 func handlerFetchFeed(state *State, cmd Command) error {

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"blog-aggregator-go/internal/database"
 	"context"
 	"fmt"
+
+	"github.com/joaquinbian/blog-aggregator-go/internal/database"
 )
 
 func loginMiddleware(handler func(s *State, cmd Command, user database.User) error) func(*State, Command) error {

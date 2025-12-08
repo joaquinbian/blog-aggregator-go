@@ -1,13 +1,13 @@
 package main
 
 import (
-	"blog-aggregator-go/internal/database"
-	"blog-aggregator-go/internal/utils"
 	"context"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/joaquinbian/blog-aggregator-go/internal/database"
+	"github.com/joaquinbian/blog-aggregator-go/internal/utils"
 )
 
 func handlerAddFeed(state *State, cmd Command, user database.User) error {

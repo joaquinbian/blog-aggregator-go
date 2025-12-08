@@ -1,12 +1,12 @@
 package main
 
 import (
-	"blog-aggregator-go/internal/config"
-	"blog-aggregator-go/internal/database"
 	"database/sql"
 	"log"
 	"os"
 
+	"github.com/joaquinbian/blog-aggregator-go/internal/config"
+	"github.com/joaquinbian/blog-aggregator-go/internal/database"
 	_ "github.com/lib/pq"
 )
 
