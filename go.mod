@@ -1,4 +1,4 @@
-module blog-aggregator-go
+module github.com/joaquinbian/blog-aggregator-go
 
 go 1.25.1
 
