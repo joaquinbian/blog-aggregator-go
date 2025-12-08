@@ -44,8 +44,10 @@ go version
 Install the `gator` CLI tool using `go install`:
 
 ```bash
-go install github.com/joaquinbian/blog-aggregator-go@latest
+go install github.com/joaquinbian/blog-aggregator-go/cmd/gator@latest
 ```
+
+This will install the `gator` binary to your `$GOPATH/bin` directory (typically `~/go/bin`).
 
 This will install the `gator` binary to your `$GOPATH/bin` directory (typically `~/go/bin`).
 
