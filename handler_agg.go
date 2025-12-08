@@ -53,7 +53,7 @@ func scrapeFeeds(state *State) error {
 		return fmt.Errorf("error fetching feed: %v\n", err)
 	}
 
-	err = savePostToDB(state, feed, nextFeed.ID)
+	err = savePostToDB(state.db, feed, nextFeed.ID)
 
 	fmt.Printf("error de saveposts %v\n", err)
 	if err != nil {
@@ -68,14 +68,11 @@ func scrapeFeeds(state *State) error {
 	return nil
 }
 
-func savePostToDB(state *State, feed *RSSFeed, idFeed uuid.UUID) error {
-	var err error = nil
+func savePostToDB(db *database.Queries, feed *RSSFeed, idFeed uuid.UUID) error {
 	for _, item := range feed.Channel.Item {
-		fmt.Print("me ejecuto range")
 		pubDate, err := utils.ParsePubDate(item.PubDate)
 		if err != nil {
 			pubDate = time.Now()
-			break
 		}
 
 		postData := database.CreatePostParams{
@@ -89,13 +86,13 @@ func savePostToDB(state *State, feed *RSSFeed, idFeed uuid.UUID) error {
 			FeedID:      idFeed,
 		}
 
-		post, err := state.db.CreatePost(context.Background(), postData)
+		_, err = db.CreatePost(context.Background(), postData)
 
 		if err != nil {
-			fmt.Errorf("error inserting post %v: %v\n", post.Title, err)
+			fmt.Printf("error inserting post %v: %v\n", item.Title, err)
 			continue
 		}
 	}
-	return err
+	return nil
 
 }

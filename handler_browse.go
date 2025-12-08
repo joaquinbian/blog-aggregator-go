@@ -8,7 +8,7 @@ import (
 )
 
 func handlerBrowse(state *State, cmd Command, user database.User) error {
-	var limit int
+	var limit int = 2
 	if len(cmd.Args) > 1 {
 		return fmt.Errorf("usage: %s <limit>\n", cmd.Name)
 	} else if len(cmd.Args) == 1 {
@@ -17,8 +17,6 @@ func handlerBrowse(state *State, cmd Command, user database.User) error {
 			return fmt.Errorf("usage: %s <number>\n", cmd.Name)
 		}
 		limit = n
-	} else {
-		limit = 2
 	}
 	params := database.GetPostsForUserParams{
 		Limit:  int32(limit),
@@ -38,6 +36,7 @@ func printPosts(posts []database.GetPostsForUserRow) {
 		fmt.Println("---------------------------------------")
 		fmt.Printf("* Feed: %s\n", item.FeedName)
 		fmt.Printf("* Post title: %s\n", item.Title)
+		fmt.Printf("* Description: %s\n", item.Description.String)
 		fmt.Printf("* Link: %s\n", item.Url)
 		fmt.Println()
 	}
